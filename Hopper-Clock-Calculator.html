@@ -1,0 +1,62 @@
+<div>
+<b>Minutes: </b><input type="number" id="minutes" value=0></input>
+<b>Seconds: </b><input type="number" id="seconds" value=0></input>
+</div>
+<div>
+<input type="button" value="Calculate" id="Calc">  
+</div>
+<div>
+<b>Results</b>
+</div>
+<div>
+<p id="results"></p>
+<p id="time"></p>
+</div>
+<script>
+document.getElementById("Calc").addEventListener("click", calculate);
+function calculate(){
+	var minutes = parseFloat(document.getElementById("minutes").value);
+	var sec = parseFloat(document.getElementById("seconds").value);
+	var tot_sec = minutes *60 + sec ;
+
+	switch(true ){
+		case(tot_sec<256):
+			simple(tot_sec)
+			break;
+		case (tot_sec<65536):
+			cascaded(tot_sec)
+	}
+	
+}
+
+function simple(seconds){
+	var count=Math.round(seconds/0.8)
+	var loose = count%64
+	var stacks = (count-loose)/64
+	console.log(document.getElementById("results"))
+	document.getElementById("results").innerHTML = "Use the simple Hopper clock with " +stacks + " stacks and "+ loose+" items"
+	var seconds_acutal = (count*0.8)%60
+	var minutes = (count*0.8-seconds_acutal)/60
+	document.getElementById("time").innerHTML = "The expected loop time is " + minutes + " Minutes and " +seconds_acutal.toFixed(2) + " Seconds"
+}
+
+function cascaded(seconds){
+	console.log("complex")
+	for (var first_stage = 2; first_stage < 319; first_stage++){
+		if ((seconds/0.8)/first_stage<320){
+			break;
+		}
+	}
+	var first_loose  = first_stage%64;
+	var first_stacks = (first_stage-first_loose)/64;
+	var second_stage = Math.round(seconds/(first_stage*0.8));
+	var second_loose = second_stage%64;
+	var second_stacks = (second_loose-second_loose)/64;
+	var seconds_acutal = (first_stage*second_stage*0.8)%60;
+	var minutes = (first_stage*second_stage*0.8-(first_stage*second_stage*0.8)%60)/60;
+	
+	document.getElementById("results").innerHTML = "Use the Cascaded Hopper clock with " +first_stacks + " stacks and "+ first_loose+" items in the first stange and " + second_stacks + " stacks and "+  second_loose + " items in the second stage";
+	document.getElementById("time").innerHTML = "The expected loop time is " + minutes + " Minutes and " + seconds_acutal.toFixed(2) + " Seconds"
+	
+}
+</script>
